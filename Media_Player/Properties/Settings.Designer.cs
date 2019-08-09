@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MediaPlayer_WPF.Properties
+namespace Media_Player.Properties
 {
 
 

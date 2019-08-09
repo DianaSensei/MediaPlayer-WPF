@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D5BB72EC-956A-406D-B378-8884D223F758}</ProjectGuid>
+    <ProjectGuid>{6E703571-0ABF-4EBC-8FDC-342281AFAA69}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>MediaPlayer_WPF</RootNamespace>
-    <AssemblyName>MediaPlayer-WPF</AssemblyName>
+    <RootNamespace>Media_Player</RootNamespace>
+    <AssemblyName>Media_Player</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -93,6 +93,45 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="image\Background.png" />
+    <Resource Include="image\PlaylistAreaBackground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="image\AboutButton.png" />
+    <Resource Include="image\HeadTittle.png" />
+    <Resource Include="image\LoadButton.png" />
+    <Resource Include="image\NameTagBackground.png" />
+    <Resource Include="image\NextButton.png" />
+    <Resource Include="image\OpenButton.png" />
+    <Resource Include="image\PauseButton.png" />
+    <Resource Include="image\PlayButton.png" />
+    <Resource Include="image\PlayerToolBar.png" />
+    <Resource Include="image\PlayModeButtonBackground.png" />
+    <Resource Include="image\PreviousButton.png" />
+    <Resource Include="image\Repeat10Button.png" />
+    <Resource Include="image\Repeat5Button.png" />
+    <Resource Include="image\RepeatButton.png" />
+    <Resource Include="image\RepeatList_Black.png" />
+    <Resource Include="image\RepeatList_White.png" />
+    <Resource Include="image\SaveButton.png" />
+    <Resource Include="image\ShuffleButton.png" />
+    <Resource Include="image\ShuffleList_Black.png" />
+    <Resource Include="image\ShuffleList_White.png" />
+    <Resource Include="image\VolumeLine.png" />
+    <Resource Include="image\VolumeSymbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="WMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,0 +1,63 @@
+﻿<Window x:Class="Media_Player.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Media_Player"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="1000">
+
+    <Canvas>
+        <Image Source="image/Background.png"
+               RenderOptions.BitmapScalingMode="HighQuality" Height="570"
+               />
+       
+        <Canvas Height="250" Width="70" Canvas.Left="15" Canvas.Top="25">
+            <Button Content="Add" Height="35" Width="65" IsDefault="True" Click="Add_Button_Click"/>
+            <Button Content="Save" Height="35" Width="65" Canvas.Top="70"/>
+            <Button Content="Load" Height="35" Width="65" Canvas.Top="140"/>
+            <Button Content="About" Height="35" Width="65" Canvas.Top="210"/>
+        </Canvas>
+        <Canvas>
+            <Border Height="400" Width="450" Canvas.Left="100" Canvas.Top="25">
+
+            </Border>
+        </Canvas>
+        <Canvas Height="600" Width="400" Canvas.Left="600" >
+            <Image Source="image/PlaylistAreaBackground.png"/>
+            <ListBox Name="list" MouseDoubleClick="List_MouseDoubleClick" >
+                
+            </ListBox>
+        </Canvas>
+        <Canvas Height="100" Width="1000" Canvas.Top="455" Background="Black">
+            <Border Height="80" Width="90" Canvas.Left="20" Canvas.Top="10"/>
+            <Button Height="50" Width="50" Canvas.Left="400" Canvas.Top="25" Background="Black" BorderBrush="Black" Click="Prev10_Button_Click">
+                <Image Source="image/PreviousButton.png"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
+            </Button>
+            <Button  Height="80" Width="80" Canvas.Left="460" Canvas.Top="10" Background="Black" BorderBrush="Black" Click="Play_Button_Click">
+                <Image Source="image/PlayButton.png"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
+            </Button>
+            <Button Height="50" Width="50" Canvas.Left="550" Canvas.Top="25" Background="Black" BorderBrush="Black" Click="Next10_Button_Click">
+                <Image Source="image/NextButton.png"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
+            </Button>
+            <Button Height="50" Width="50" Canvas.Left="700" Canvas.Top="25" Background="Black" BorderBrush="Black">
+                <Image Source="image/ShuffleButton.png"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
+            </Button>
+            <Button Height="50" Width="50" Canvas.Left="750" Canvas.Top="25" Background="Black" BorderBrush="Black" Click="Replay_Button_Click">
+                <Image Source="image/RepeatButton.png"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
+            </Button>
+            <Button Height="50" Width="50" Canvas.Left="820" Canvas.Top="25" Background="Black" BorderBrush="Black">
+                <Image Source="image/VolumeSymbol.png"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
+            </Button>
+            <TextBlock Name="_time" Height="50" Width="100" Canvas.Left="280" Canvas.Top="25" />
+            <Slider  Height="20" Width="100" Canvas.Left="880" Canvas.Top="40" Background="Black" Value="50" Maximum="100" />
+        </Canvas>
+    </Canvas>
+    
+</Window>
