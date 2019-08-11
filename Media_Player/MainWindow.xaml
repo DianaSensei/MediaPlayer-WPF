@@ -3,61 +3,120 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto" 
         xmlns:local="clr-namespace:Media_Player"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1000">
+        Name="mainwindow"
+        SizeChanged="Mainwindow_SizeChanged"
+        Title="MainWindow" Height="500" Width="900" MinHeight="85" MinWidth="650">
+    <Grid>
+        <Grid VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Border HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" BorderBrush="Black" Width="{Binding ContentWidth}" Height="{Binding ContentHeight}" BorderThickness="1">
+                <Canvas Name="Canvas_content">
 
-    <Canvas>
-        <Image Source="image/Background.png"
-               RenderOptions.BitmapScalingMode="HighQuality" Height="570"
-               />
-       
-        <Canvas Height="250" Width="70" Canvas.Left="15" Canvas.Top="25">
-            <Button Content="Add" Height="35" Width="65" IsDefault="True" Click="Add_Button_Click"/>
-            <Button Content="Save" Height="35" Width="65" Canvas.Top="70"/>
-            <Button Content="Load" Height="35" Width="65" Canvas.Top="140"/>
-            <Button Content="About" Height="35" Width="65" Canvas.Top="210"/>
-        </Canvas>
-        <Canvas>
-            <Border Height="400" Width="450" Canvas.Left="100" Canvas.Top="25">
-
+                </Canvas>
             </Border>
-        </Canvas>
-        <Canvas Height="600" Width="400" Canvas.Left="600" >
-            <Image Source="image/PlaylistAreaBackground.png"/>
-            <ListBox Name="list" MouseDoubleClick="List_MouseDoubleClick" >
-                
-            </ListBox>
-        </Canvas>
-        <Canvas Height="100" Width="1000" Canvas.Top="455" Background="Black">
-            <Border Height="80" Width="90" Canvas.Left="20" Canvas.Top="10"/>
-            <Button Height="50" Width="50" Canvas.Left="400" Canvas.Top="25" Background="Black" BorderBrush="Black" Click="Prev10_Button_Click">
-                <Image Source="image/PreviousButton.png"
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="85"></RowDefinition>
+                    <RowDefinition Height="*" ></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Vertical">
+                    <StackPanel Margin="0,5,0,5" Orientation="Horizontal">
+                        <ComboBox Name="Combobox_playlist" Width="130" Margin="10,0,5,0"
+                                  IsEditable="True"
+                                      DropDownOpened="ComboBox_DropDownOpened"
+                                      SelectionChanged="Combobox_playlist_SelectionChanged">
+                        </ComboBox>
+                        <Button Width="30" Margin="0,0,5,0" Click="Btn_SavePlaylist"/>
+                        <Button Width="30" Click="Btn_NewPlaylist"/>
+                    </StackPanel>
+                    <Separator/>
+                    <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
+                        <Button Content="Add" Margin="10,0,10,0" Height="30" Click="Add_Button_Click"/>
+                        <Button Content="Load" Margin="10,0,10,0" Height="30" />
+                        <Button Content="About" Margin="10,0,0,0" Height="30" Click="Playlist_Detail"/>
+                    </StackPanel>
+                    <Separator/>
+                </StackPanel>
+                <Canvas Grid.Row="1">
+                    <ListView Name="list" BorderThickness="3" BorderBrush="Gray"
+                       ScrollViewer.HorizontalScrollBarVisibility="Disabled" ToolTip="Actions List" >
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Name="_border" OpacityMask="LightCyan" Width="auto" Margin="0,-4,0,-4"
+                                BorderThickness="3" CornerRadius="5">
+                                    <Border.Effect>
+                                        <DropShadowEffect  Direction="210" ShadowDepth="2"  Color="LightGray"/>
+                                    </Border.Effect>
+                                    <Border.Style>
+                                        <Style>
+                                            <Style.Triggers>
+                                                <Trigger Property="Border.IsMouseOver" Value="True">
+                                                    <Setter Property="Border.BorderBrush" Value="Gray"/>
+                                                    <Setter Property="Border.Opacity" Value="0.7"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Width="310" HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding Description}" VerticalAlignment="Center" Foreground="Black"
+                                           Width="220" TextWrapping="Wrap" FontWeight="DemiBold" Margin="8"/>
+                                        <Button  Background="IndianRed" Margin="5" Height="25" Width="25">
+                                            <materialDesign:PackIcon Margin="-13,-10,-10,-10" Kind="Close" Width="20" Height="20"/>
+                                        </Button>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Canvas>
+            </Grid>
+        </Grid>
+        <Grid VerticalAlignment="Bottom" Height="63" Background="Black">
+            <StackPanel Orientation="Horizontal" Margin="15,20,0,0">
+                <Image/>
+                <Label Height="30" Foreground="Wheat" HorizontalContentAlignment="Left" FontSize="15" Content="{Binding CurrentMedia}"/>
+            </StackPanel>
+            <Slider Margin="20,1,20,0"/>
+            <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Margin="-45,0,15,0" Name="_time" Height="30" Width="100"/>
+                <Button Height="20" Width="20" Margin="15,0,0,0" Background="Black" HorizontalAlignment="Right" BorderBrush="Black">
+                    <Image Source="image/ShuffleButton.png"
                        RenderOptions.BitmapScalingMode="HighQuality"/>
-            </Button>
-            <Button  Height="80" Width="80" Canvas.Left="460" Canvas.Top="10" Background="Black" BorderBrush="Black" Click="Play_Button_Click">
-                <Image Source="image/PlayButton.png"
+                </Button>
+                <Button Height="20" Width="20" Margin="0,0,15,0"  Background="Black" HorizontalAlignment="Right" BorderBrush="Black" Click="Replay_Button_Click">
+                    <Image Source="image/RepeatButton.png"
                        RenderOptions.BitmapScalingMode="HighQuality"/>
-            </Button>
-            <Button Height="50" Width="50" Canvas.Left="550" Canvas.Top="25" Background="Black" BorderBrush="Black" Click="Next10_Button_Click">
-                <Image Source="image/NextButton.png"
+                </Button>
+                <Button Height="20" Width="20" Margin="15,0,2,0" BorderBrush="Black" Background="Black" Click="Prev10_Button_Click">
+                    <Image Source="image/PreviousButton.png"
                        RenderOptions.BitmapScalingMode="HighQuality"/>
-            </Button>
-            <Button Height="50" Width="50" Canvas.Left="700" Canvas.Top="25" Background="Black" BorderBrush="Black">
-                <Image Source="image/ShuffleButton.png"
+                </Button>
+                <Button  Height="35" Width="35" Margin="2,0,2,0" Background="Black" BorderBrush="Black" Click="Play_Button_Click">
+                    <Image Source="image/PlayButton.png"
                        RenderOptions.BitmapScalingMode="HighQuality"/>
-            </Button>
-            <Button Height="50" Width="50" Canvas.Left="750" Canvas.Top="25" Background="Black" BorderBrush="Black" Click="Replay_Button_Click">
-                <Image Source="image/RepeatButton.png"
+                </Button>
+                <Button Height="20" Width="20" Margin="2,0,15,0"  Background="Black" BorderBrush="Black" Click="Next10_Button_Click">
+                    <Image Source="image/NextButton.png"
                        RenderOptions.BitmapScalingMode="HighQuality"/>
-            </Button>
-            <Button Height="50" Width="50" Canvas.Left="820" Canvas.Top="25" Background="Black" BorderBrush="Black">
-                <Image Source="image/VolumeSymbol.png"
+                </Button>
+                <Button Height="20" Width="20" Margin="15,0,0,0"  Background="Black" BorderBrush="Black" HorizontalAlignment="Left">
+                    <Image Source="image/VolumeSymbol.png"
                        RenderOptions.BitmapScalingMode="HighQuality"/>
-            </Button>
-            <TextBlock Name="_time" Height="50" Width="100" Canvas.Left="280" Canvas.Top="25" />
-            <Slider  Height="20" Width="100" Canvas.Left="880" Canvas.Top="40" Background="Black" Value="50" Maximum="100" />
-        </Canvas>
-    </Canvas>
-    
+                </Button>
+                <Slider HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Background="Black" Value="50" Maximum="100" />
+            </StackPanel>
+        </Grid>
+    </Grid>
 </Window>
