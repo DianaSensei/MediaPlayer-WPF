@@ -6,17 +6,21 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 using WMPLib;
 
 namespace Media_Player
@@ -30,11 +34,13 @@ namespace Media_Player
         public bool IsStopped = false;
         public bool IsPaused = false;
         public bool IsPlaying = false;
-        private double contentHeight;
-        private double contentWidth;
-        private string currentMedia;
-        double cur = 0.0;
+        public bool IsLoop = false;//Loop Mode
+
         int stt = 0;
+        int queue = 0;
+        double volumn_value;
+        double process;//Process Bar
+        string currentMediaDetail;//About
         static string[] videoExt =
         {
             ".FLV",".AVI",".WMV",".MP4",".MPG",".MPEG",".M4V"
@@ -44,35 +50,28 @@ namespace Media_Player
             ".MP3",".WAV",".WAVE",".WMA"
         };
 
-        BindingList<Media> currentPlaylist = new BindingList<Media>();
-        BindingList<Playlist> playlists = new BindingList<Playlist>();
-        WindowsMediaPlayer Player = new WindowsMediaPlayer();
-        WindowsMediaPlayer ReadDurationPlayer = new WindowsMediaPlayer();
-        IWMPPlaylist iWMPPlaylist;
+        Playlist currentPlaylist = new Playlist();//Current Playlist
+        Media currentMedia = new Media();//Media ready
+        BindingList<Playlist> playlists = new BindingList<Playlist>(); //List Playlists
+        //Player use to play media
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        //Player use to get duration of media
+        MediaPlayer mediaDuration = new MediaPlayer();
 
-        public string CurrentMedia
+        public string CurrentMediaDetail
         {
-            get => currentMedia; set
+            get => currentMediaDetail; set
             {
-                currentMedia = value;
+                currentMediaDetail = value;
+
+
                 RaiseChangeEvent();
             }
         }
 
-        public double ContentHeight
-        {
-            get => contentHeight; set
+        public double Process { get => process; set
             {
-                contentHeight = value;
-                RaiseChangeEvent();
-            }
-        }
-
-        public double ContentWidth
-        {
-            get => contentWidth; set
-            {
-                contentWidth = value;
+                process = value;
                 RaiseChangeEvent();
             }
         }
@@ -82,45 +81,50 @@ namespace Media_Player
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
         public event PropertyChangedEventHandler PropertyChanged;
-
+        DispatcherTimer processTimer = new DispatcherTimer();
         public MainWindow()
         {
             InitializeComponent();
-            list.ItemsSource = currentPlaylist;
+
+            list.ItemsSource = currentPlaylist.mediaList;
             this.DataContext = this;
-            ContentHeight = mainwindow.Height - 100;
-            contentWidth = mainwindow.Width - 230;
+
+            //Dispatcher run Process bar
+            Process = 0;
+            processTimer.Interval = TimeSpan.FromMilliseconds(100);
+            processTimer.Tick += ProcessTimer_Tick;
+            processTimer.Start();
+            //Continue play next media when current media is finished
+            mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
+
+            mediaPlayer.Volume = 100;
+            Volume_Slider.Value = 100;
+
             Combobox_playlist.ItemsSource = playlists;
-            list.ItemsSource = currentPlaylist;
-            iWMPPlaylist = Player.playlistCollection.newPlaylist("currentPlaylist");
         }
 
-        void CreateMediaElement(string path)
+        private void MediaPlayer_MediaEnded(object sender, EventArgs e)
         {
-            MediaElement mediaElement = new MediaElement();
-            Canvas_content.Children.Add(mediaElement);
-            mediaElement.Width = mainwindow.Width - 230;
-            mediaElement.Height = mainwindow.Height - 100;
-            mediaElement.Source = new Uri(path);
+            if (queue + 1 >= currentPlaylist.mediaList.Count) return;
+            Next_Btn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent,Next_Btn));
         }
+
+        private void ProcessTimer_Tick(object sender, EventArgs e)
+        {
+            if (currentMedia == null || currentMedia.Duration_length == 0) return;
+
+            Process = mediaPlayer.Position.TotalSeconds * 100 / currentMedia.Duration_length ;
+        }
+        //Get duration of media
         int getDuration(string path)
         {
             int duration = 0;
-            ReadDurationPlayer.URL = path;
-            ReadDurationPlayer.controls.play();
-            duration = (int)ReadDurationPlayer.currentMedia.duration;
-            ReadDurationPlayer.controls.stop();
+            mediaDuration.Open(new Uri(path));
+            while (!mediaDuration.NaturalDuration.HasTimeSpan) ;
+            duration = (int)mediaDuration.NaturalDuration.TimeSpan.TotalSeconds;
             return duration;
         }
-        string getDurationString(int duration)
-        {
-            string durationStr;
-            TimeSpan result = TimeSpan.FromSeconds(duration);
-            if (duration >= 3600)
-                durationStr = result.ToString("hh':'mm':'ss");
-            else durationStr = result.ToString("mm':'ss");
-            return durationStr;
-        }
+
         bool IsAudioFile(string path)
         {
             return -1 != Array.IndexOf(audioExt, Path.GetExtension(path).ToUpperInvariant());
@@ -129,7 +133,7 @@ namespace Media_Player
         {
             return -1 != Array.IndexOf(videoExt, Path.GetExtension(path).ToUpperInvariant());
         }
-
+        //Add new Media to current playlist
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog open = new OpenFileDialog
@@ -146,12 +150,7 @@ namespace Media_Player
                 {
                     if (IsAudioFile(filenames[i]) || IsVideoFile(filenames[i]))
                     {
-                        stt += 1;
-                        string title = stt + ". " + filenames[i];
                         AddNewMedia(filepaths[i]);
-                        IWMPMedia3 media = Player.newMedia(filepaths[i]) as IWMPMedia3;
-                        iWMPPlaylist.appendItem(media);
-
                     }
 
                 }
@@ -159,61 +158,82 @@ namespace Media_Player
         }
         void AddNewMedia(string str)
         {
-            currentPlaylist.Add(new Media()
+            currentPlaylist.mediaList.Add(new Media()
             {
+                Order = stt += 1,
                 File_Path = str,
-                Duration_length = getDuration(str)
-            });
+                Duration_length =   getDuration(str)
+            }) ; ;
         }
         private void Play_Button_Click(object sender, RoutedEventArgs e)
         {
 
             if (!IsPlaying)
             {
-                if (IsPaused)
+                if (!IsPaused)
                 {
-                    Player.controls.currentPosition = cur;
-                }
-                else
-                {
-                    Player.currentPlaylist = iWMPPlaylist;
+                    if (currentPlaylist.mediaList.Count > 0)
+                    {
+                        currentMedia = currentPlaylist.mediaList[0];
+                        mediaPlayer.Open(new Uri(currentMedia.File_Path));
+                    }
                 }
                 IsStopped = false;
                 IsPaused = false;
                 IsPlaying = true;
-                Player.controls.play();
+                mediaPlayer.Play();
             }
             else
             {
-                cur = Player.controls.currentPosition;
-                Player.controls.pause();
+                mediaPlayer.Pause();
                 IsStopped = false;
                 IsPlaying = false;
                 IsPaused = true;
             }
         }
-
-        private void Next10_Button_Click(object sender, RoutedEventArgs e)
+        private void Next_Button_Click(object sender, RoutedEventArgs e)
         {
-            Player.controls.next();
+            if (queue + 1 >= currentPlaylist.mediaList.Count)
+                return;
+            queue += 1;
+            currentMedia = currentPlaylist.mediaList[queue];
+            mediaPlayer.Stop();
+            mediaPlayer.Open(new Uri(currentMedia.File_Path));
+            mediaPlayer.Play();
         }
-
-        private void Prev10_Button_Click(object sender, RoutedEventArgs e)
+        private void Prev_Button_Click(object sender, RoutedEventArgs e)
         {
-            Player.controls.previous();
+            if (queue - 1 < 0)
+                return;
+            queue -= 1;
+            currentMedia = currentPlaylist.mediaList[queue];
+            mediaPlayer.Stop();
+            mediaPlayer.Open(new Uri(currentMedia.File_Path));
+            mediaPlayer.Play();
         }
-
+        //Loop Mode...
         private void Replay_Button_Click(object sender, RoutedEventArgs e)
         {
-            Player.controls.currentPosition = 0;
+            //mediaPlayer.Position = 0;
+            //Player.URL = currentPlaylist.mediaList[queue].File_Path;
+            //Player.controls.play();
         }
 
         private void ComboBox_DropDownOpened(object sender, EventArgs e)
         {
-            string[] file = Directory.GetFiles("C:/Users/Systemcall/OneDrive/Máy tính","*.pl");
+            string[] file = Directory.GetFiles("C:/Users/Systemcall/OneDrive/Máy tính", "*.pl");
             playlists.Clear();
             foreach (var i in file)
                 playlists.Add(CreatePlaylist(i));
+        }
+        private void Combobox_playlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var cb = sender as ComboBox;
+            var path = (cb.SelectedItem as Playlist).m_Path;
+
+            var newPl = CreatePlaylist(path);
+
+            currentPlaylist = newPl;
         }
         private Playlist CreatePlaylist(string i)
         {
@@ -221,30 +241,65 @@ namespace Media_Player
             pl.m_Path = i;
             return pl;
         }
-        private void Btn_SavePlaylist(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void Btn_NewPlaylist(object sender, RoutedEventArgs e)
         {
             playlists.Clear();
         }
-
-        private void Combobox_playlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Btn_SavePlaylist(object sender, RoutedEventArgs e)
         {
 
         }
-
         private void Playlist_Detail(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void Mainwindow_SizeChanged(object sender, SizeChangedEventArgs e)
+
+        //Shuffle Mode
+        private void Shuffle_Button_Click(object sender, RoutedEventArgs e)
         {
-            ContentHeight = mainwindow.Height - 100;
-            contentWidth = mainwindow.Width - 230;
+            var btn = sender as ToggleButton;
+            if(btn.IsChecked == false)
+            {
+                currentPlaylist.ShuffleOff();
+                return;
+            }
+            currentPlaylist.Shuffle();
+        }
+
+        private void Volume_Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            double value = (sender as Slider).Value;
+            mediaPlayer.Volume = value;
+            if (value == 0)
+            {
+                Volumn_Mode_Btn.IsChecked = true;
+            }
+            else
+            {
+                Volumn_Mode_Btn.IsChecked = false;
+            }
+        }
+        private void Volumn_Mode_Btn_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as ToggleButton;
+            if (btn.IsChecked == true)
+            {
+                volumn_value = mediaPlayer.Volume;
+                Volume_Slider.Value = 0;
+            }
+            else
+            {
+                Volume_Slider.Value = volumn_value;
+            }
+        }
+
+        private void Process_Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var slider = (sender as Slider).Value;
+            var value = slider * currentMedia.Duration_length / 100;
+
+            mediaPlayer.Position = TimeSpan.FromSeconds(value);
         }
     }
 }

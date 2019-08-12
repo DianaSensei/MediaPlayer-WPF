@@ -13,110 +13,257 @@
         xmlns:local="clr-namespace:Media_Player"
         mc:Ignorable="d"
         Name="mainwindow"
-        SizeChanged="Mainwindow_SizeChanged"
-        Title="MainWindow" Height="500" Width="900" MinHeight="85" MinWidth="650">
-    <Grid>
-        <Grid VerticalAlignment="Top">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="300"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Border HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" BorderBrush="Black" Width="{Binding ContentWidth}" Height="{Binding ContentHeight}" BorderThickness="1">
-                <Canvas Name="Canvas_content">
+        Title="Audio Player" Height="500" Width="650">
+    <Window.Resources>
+        <Style x:Key="ScrollBarTrackThumb"
+        TargetType="{x:Type Thumb}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid x:Name="Grid">
+                            <Rectangle HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Width="Auto"
+                                Height="Auto"
+                                Fill="Transparent" />
+                            <Border x:Name="CornerScrollBarRectangle"
+                            CornerRadius="5"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Width="Auto"
+                            Height="Auto"
+                            Margin="0,1,0,1"
+                            Background="{TemplateBinding Background}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Tag"
+                                Value="Horizontal">
+                                <Setter TargetName="CornerScrollBarRectangle"
+                                Property="Width"
+                                Value="Auto" />
+                                <Setter TargetName="CornerScrollBarRectangle"
+                                Property="Height"
+                                Value="6" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type ScrollBar}">
+            <Setter Property="Stylus.IsFlicksEnabled"
+            Value="false" />
+            <Setter Property="Foreground"
+            Value="#ADABAB" />
+            <Setter Property="Background"
+            Value="Transparent" />
+            <Setter Property="Width"
+            Value="7" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="GridRoot"
+                        Width="7"
+                        Background="{TemplateBinding Background}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.00001*" />
+                            </Grid.RowDefinitions>
+                            <Track x:Name="PART_Track"
+                            Grid.Row="0"
+                            IsDirectionReversed="true"
+                            Focusable="false">
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb"
+                                    Background="{TemplateBinding Foreground}"
+                                    Style="{DynamicResource ScrollBarTrackThumb}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton x:Name="PageUp"
+                                            Command="ScrollBar.PageDownCommand"
+                                            Opacity="0"
+                                            Focusable="false" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton x:Name="PageDown"
+                                            Command="ScrollBar.PageUpCommand"
+                                            Opacity="0"
+                                            Focusable="false" />
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger SourceName="Thumb"
+                                Property="IsMouseOver"
+                                Value="true">
+                                <Setter Value="{DynamicResource ButtonSelectBrush}"
+                                TargetName="Thumb"
+                                Property="Background" />
+                            </Trigger>
+                            <Trigger SourceName="Thumb"
+                                Property="IsDragging"
+                                Value="true">
+                                <Setter Value="{DynamicResource DarkBrush}"
+                                TargetName="Thumb"
+                                Property="Background" />
+                            </Trigger>
 
-                </Canvas>
-            </Border>
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="85"></RowDefinition>
-                    <RowDefinition Height="*" ></RowDefinition>
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Vertical">
-                    <StackPanel Margin="0,5,0,5" Orientation="Horizontal">
-                        <ComboBox Name="Combobox_playlist" Width="130" Margin="10,0,5,0"
-                                  IsEditable="True"
-                                      DropDownOpened="ComboBox_DropDownOpened"
-                                      SelectionChanged="Combobox_playlist_SelectionChanged">
-                        </ComboBox>
-                        <Button Width="30" Margin="0,0,5,0" Click="Btn_SavePlaylist"/>
-                        <Button Width="30" Click="Btn_NewPlaylist"/>
+                            <Trigger Property="IsEnabled"
+                                Value="false">
+                                <Setter TargetName="Thumb"
+                                Property="Visibility"
+                                Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="Orientation"
+                                Value="Horizontal">
+                                <Setter TargetName="GridRoot"
+                                Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="PART_Track"
+                                Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Width"
+                                Value="Auto" />
+                                <Setter Property="Height"
+                                Value="8" />
+                                <Setter TargetName="Thumb"
+                                Property="Tag"
+                                Value="Horizontal" />
+                                <Setter TargetName="PageDown"
+                                Property="Command"
+                                Value="ScrollBar.PageLeftCommand" />
+                                <Setter TargetName="PageUp"
+                                Property="Command"
+                                Value="ScrollBar.PageRightCommand" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <StackPanel Orientation="Vertical">
+        <StackPanel Height="405" Width="650" Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    FlowDirection="RightToLeft">
+            <Border BorderBrush="Black" BorderThickness="1">
+                <StackPanel Name="PanelList" Orientation="Vertical" FlowDirection="LeftToRight" Width="300">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Playlist:" FontSize="15" VerticalAlignment="Center"/>
+                        <StackPanel Margin="0,5,0,5" Orientation="Horizontal">
+                            <ComboBox Name="Combobox_playlist" Width="130" Margin="10,0,5,0"
+                                  IsEditable="True" VerticalAlignment="Center"
+                                  DropDownOpened="ComboBox_DropDownOpened"
+                                  SelectionChanged="Combobox_playlist_SelectionChanged">
+                            </ComboBox>
+                            <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Btn_SavePlaylist">
+                                <materialDesign:PackIcon Kind="ContentSave" Width="24" Height="24"/>
+                            </Button>
+                            <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Btn_NewPlaylist">
+                                <materialDesign:PackIcon Kind="CreateNewFolder" Width="24" Height="24"/>
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
                     <Separator/>
                     <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
-                        <Button Content="Add" Margin="10,0,10,0" Height="30" Click="Add_Button_Click"/>
-                        <Button Content="Load" Margin="10,0,10,0" Height="30" />
-                        <Button Content="About" Margin="10,0,0,0" Height="30" Click="Playlist_Detail"/>
+                        <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Add_Button_Click">
+                            <materialDesign:PackIcon Kind="Add" Height="24" Width="24"/>
+                        </Button>
+                        <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}">
+                            <materialDesign:PackIcon Kind="Loading" Height="24" Width="24"/>
+                        </Button>
+                        <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Playlist_Detail">
+                            <materialDesign:PackIcon Kind="Details" Height="24" Width="24"/>
+                        </Button>
                     </StackPanel>
                     <Separator/>
-                </StackPanel>
-                <Canvas Grid.Row="1">
-                    <ListView Name="list" BorderThickness="3" BorderBrush="Gray"
-                       ScrollViewer.HorizontalScrollBarVisibility="Disabled" ToolTip="Actions List" >
+                    <ListView FlowDirection="LeftToRight" Name="list" Height="305"
+                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Border Name="_border" OpacityMask="LightCyan" Width="auto" Margin="0,-4,0,-4"
-                                BorderThickness="3" CornerRadius="5">
-                                    <Border.Effect>
-                                        <DropShadowEffect  Direction="210" ShadowDepth="2"  Color="LightGray"/>
-                                    </Border.Effect>
-                                    <Border.Style>
-                                        <Style>
-                                            <Style.Triggers>
-                                                <Trigger Property="Border.IsMouseOver" Value="True">
-                                                    <Setter Property="Border.BorderBrush" Value="Gray"/>
-                                                    <Setter Property="Border.Opacity" Value="0.7"/>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Width="310" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Width="300" HorizontalAlignment="Left">
+                                    <materialDesign:PackIcon VerticalAlignment="Center" Kind="Music" Width="24" Height="24"/>
+                                    <StackPanel Orientation="Vertical" Width="215">
                                         <TextBlock Text="{Binding Description}" VerticalAlignment="Center" Foreground="Black"
-                                           Width="220" TextWrapping="Wrap" FontWeight="DemiBold" Margin="8"/>
-                                        <Button  Background="IndianRed" Margin="5" Height="25" Width="25">
-                                            <materialDesign:PackIcon Margin="-13,-10,-10,-10" Kind="Close" Width="20" Height="20"/>
-                                        </Button>
+                                           TextWrapping="Wrap" FontWeight="DemiBold" Margin="8"/>
+                                        <TextBlock Margin="0,0,20,0" HorizontalAlignment="Right" Text="{Binding DurationString}"/>
                                     </StackPanel>
-                                </Border>
+                                    <Button Background="Transparent" BorderBrush="Transparent" Padding="5,0,5,0" Foreground="IndianRed">
+                                        <materialDesign:PackIcon Kind="Close" Width="18" Height="18"/>
+                                    </Button>
+                                </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                </Canvas>
-            </Grid>
-        </Grid>
-        <Grid VerticalAlignment="Bottom" Height="63" Background="Black">
-            <StackPanel Orientation="Horizontal" Margin="15,20,0,0">
-                <Image/>
-                <Label Height="30" Foreground="Wheat" HorizontalContentAlignment="Left" FontSize="15" Content="{Binding CurrentMedia}"/>
+                </StackPanel>
+            </Border>
+            <MediaElement Name="Canvas_content" Width="340" FlowDirection="LeftToRight">
+
+            </MediaElement>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Height="65" Background="SlateGray">
+            <Slider Name="Process_Slider" Minimum="0" Value="{Binding Process}" ValueChanged="Process_Slider_ValueChanged" Maximum="100" Margin="20,0,20,0"/>
+            <StackPanel Height="45" VerticalAlignment="Bottom" Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Width="175" Margin="15,0,0,0">
+                    <Image VerticalAlignment="Center" Source="{Binding CurrentMediaIcon}" Height="24" Width="24"/>
+                    <Label VerticalAlignment="Center" Height="30" Foreground="Wheat" HorizontalContentAlignment="Left" FontSize="15" Content="{Binding CurrentMedia}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                    <ToggleButton Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
+                                  Style="{StaticResource MaterialDesignActionToggleButton}" 
+                                  Click="Shuffle_Button_Click" HorizontalAlignment="Left">
+                        <ToggleButton.Content>
+                            <materialDesign:PackIcon Kind="ShuffleDisabled" Width="24" Height="24"/>
+                        </ToggleButton.Content>
+                        <materialDesign:ToggleButtonAssist.OnContent>
+                            <materialDesign:PackIcon Kind="ShuffleVariant" Foreground="Aqua" Width="24" Height="24" />
+                        </materialDesign:ToggleButtonAssist.OnContent>
+                    </ToggleButton>
+                    <ToggleButton Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
+                                  Style="{StaticResource MaterialDesignActionToggleButton}" 
+                                  Click="Replay_Button_Click" HorizontalAlignment="Left">
+                        <ToggleButton.Content>
+                            <materialDesign:PackIcon Kind="Loop" Width="24" Height="24"/>
+                        </ToggleButton.Content>
+                        <materialDesign:ToggleButtonAssist.OnContent>
+                            <materialDesign:PackIcon Kind="Loop" Foreground="Aqua" Width="24" Height="24" />
+                        </materialDesign:ToggleButtonAssist.OnContent>
+                    </ToggleButton>
+                    <Button Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" Click="Prev_Button_Click">
+                        <materialDesign:PackIcon Kind="SkipPrevious" Width="24" Height="24"/>
+                    </Button>
+                    <ToggleButton Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
+                                  Style="{StaticResource MaterialDesignActionToggleButton}" 
+                                  Click="Play_Button_Click" HorizontalAlignment="Left">
+                        <ToggleButton.Content>
+                            <materialDesign:PackIcon Kind="PlayCircle" Width="34" Height="34"/>
+                        </ToggleButton.Content>
+                        <materialDesign:ToggleButtonAssist.OnContent>
+                            <materialDesign:PackIcon Kind="PauseCircle" Width="34" Height="34" />
+                        </materialDesign:ToggleButtonAssist.OnContent>
+                    </ToggleButton>
+                    <Button Name="Next_Btn" Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" Click="Next_Button_Click">
+                        <materialDesign:PackIcon Kind="SkipNext" Width="24" Height="24"/>
+                    </Button>
+                    <ToggleButton Name="Volumn_Mode_Btn" Padding="8,0,8,0" Background="Transparent"
+                                  BorderBrush="Transparent" Style="{StaticResource MaterialDesignActionToggleButton}"
+                                  HorizontalAlignment="Left" Click="Volumn_Mode_Btn_Click">
+                        <ToggleButton.Content>
+                            <materialDesign:PackIcon Kind="VolumeHigh" Width="24" Height="24"/>
+                        </ToggleButton.Content>
+                        <materialDesign:ToggleButtonAssist.OnContent>
+                            <materialDesign:PackIcon Kind="VolumeMute" Width="24" Height="24" />
+                        </materialDesign:ToggleButtonAssist.OnContent>
+                    </ToggleButton>
+                    <Slider Name="Volume_Slider" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" ValueChanged="Volume_Slider_ValueChanged" Maximum="100" />
+                </StackPanel>
+                <TextBlock VerticalAlignment="Top" Name="_time" Height="30" Width="120"/>
             </StackPanel>
-            <Slider Margin="20,1,20,0"/>
-            <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBlock Margin="-45,0,15,0" Name="_time" Height="30" Width="100"/>
-                <Button Height="20" Width="20" Margin="15,0,0,0" Background="Black" HorizontalAlignment="Right" BorderBrush="Black">
-                    <Image Source="image/ShuffleButton.png"
-                       RenderOptions.BitmapScalingMode="HighQuality"/>
-                </Button>
-                <Button Height="20" Width="20" Margin="0,0,15,0"  Background="Black" HorizontalAlignment="Right" BorderBrush="Black" Click="Replay_Button_Click">
-                    <Image Source="image/RepeatButton.png"
-                       RenderOptions.BitmapScalingMode="HighQuality"/>
-                </Button>
-                <Button Height="20" Width="20" Margin="15,0,2,0" BorderBrush="Black" Background="Black" Click="Prev10_Button_Click">
-                    <Image Source="image/PreviousButton.png"
-                       RenderOptions.BitmapScalingMode="HighQuality"/>
-                </Button>
-                <Button  Height="35" Width="35" Margin="2,0,2,0" Background="Black" BorderBrush="Black" Click="Play_Button_Click">
-                    <Image Source="image/PlayButton.png"
-                       RenderOptions.BitmapScalingMode="HighQuality"/>
-                </Button>
-                <Button Height="20" Width="20" Margin="2,0,15,0"  Background="Black" BorderBrush="Black" Click="Next10_Button_Click">
-                    <Image Source="image/NextButton.png"
-                       RenderOptions.BitmapScalingMode="HighQuality"/>
-                </Button>
-                <Button Height="20" Width="20" Margin="15,0,0,0"  Background="Black" BorderBrush="Black" HorizontalAlignment="Left">
-                    <Image Source="image/VolumeSymbol.png"
-                       RenderOptions.BitmapScalingMode="HighQuality"/>
-                </Button>
-                <Slider HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Background="Black" Value="50" Maximum="100" />
-            </StackPanel>
-        </Grid>
-    </Grid>
+        </StackPanel>
+    </StackPanel>
 </Window>
