@@ -40,8 +40,10 @@ namespace Media_Player
         int stt = 0;
         int queue = 0;
         double volume_value;
+        string total_duration;
         double process;//Process Bar
         string currentMediaDetail;//About
+        string processString;
         static string[] videoExt =
         {
             ".FLV",".AVI",".WMV",".MP4",".MPG",".MPEG",".M4V"
@@ -70,9 +72,30 @@ namespace Media_Player
             }
         }
 
-        public double Process { get => process; set
+        public double Process
+        {
+            get => process; set
             {
                 process = value;
+                RaiseChangeEvent();
+            }
+        }
+
+        public string Total_duration
+        {
+            get => total_duration; set
+            {
+                total_duration = value;
+                RaiseChangeEvent();
+            }
+        }
+
+        public string ProcessString {
+            get {
+                return processString;
+            }
+            set {
+                processString = value;
                 RaiseChangeEvent();
             }
         }
@@ -124,14 +147,20 @@ namespace Media_Player
                     return;
                 }
             }
-            Next_Btn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent,Next_Btn));
+            Next_Btn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent, Next_Btn));
         }
 
         private void ProcessTimer_Tick(object sender, EventArgs e)
         {
-            if (currentMedia == null || currentMedia.Duration_length == 0) return;
 
-            Process = mediaPlayer.Position.TotalSeconds * 100 / currentMedia.Duration_length ;
+            if (currentMedia == null || currentMedia.Duration_length == 0)
+            {
+                ProcessString = TimeSpan.FromSeconds(0).ToString("mm':'ss") + "/" + TimeSpan.FromSeconds(0).ToString("mm':'ss");
+                return;
+            }
+            CurrentMediaDetail = Path.GetFileNameWithoutExtension(currentMedia.File_Path);
+            Process = mediaPlayer.Position.TotalSeconds * 100 / currentMedia.Duration_length;
+            ProcessString = mediaPlayer.Position.ToString("mm':'ss") + "/" + TimeSpan.FromSeconds(currentMedia.Duration_length).ToString("mm':'ss");
         }
         //Get duration of media
         int getDuration(string path)
@@ -172,6 +201,7 @@ namespace Media_Player
                     }
 
                 }
+                UpdateTotalString();
             }
         }
         void AddNewMedia(string str)
@@ -180,8 +210,8 @@ namespace Media_Player
             {
                 Order = stt += 1,
                 File_Path = str,
-                Duration_length =   getDuration(str)
-            }) ; ;
+                Duration_length = getDuration(str)
+            }); ;
         }
         private void Play_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -192,7 +222,7 @@ namespace Media_Player
                 {
                     if (currentPlaylist.mediaList.Count > 0)
                     {
-                        if(currentMedia == null)
+                        if (currentMedia == null)
                         {
                             currentMedia = currentPlaylist.mediaList[0];
                         }
@@ -201,7 +231,7 @@ namespace Media_Player
                 }
                 IsStopped = false;
                 IsPaused = false;
-                IsPlaying = true;   
+                IsPlaying = true;
                 mediaPlayer.Play();
             }
             else
@@ -215,10 +245,19 @@ namespace Media_Player
         private void Next_Button_Click(object sender, RoutedEventArgs e)
         {
             if (queue + 1 >= currentPlaylist.mediaList.Count)
-                return;
+            {
+                if (!IsLoop)  return;
+                queue = -1;
+            }
             queue += 1;
             currentMedia = currentPlaylist.mediaList[queue];
-            if (!IsPlaying)  return;
+            if (!IsPlaying) return;
+            if (!File.Exists(currentMedia.File_Path))
+            {
+                MessageBox.Show("Media not Exists!");
+                (sender as Button).RaiseEvent(new RoutedEventArgs(Button.ClickEvent, sender));
+                return;
+            }
             mediaPlayer.Stop();
             mediaPlayer.Open(new Uri(currentMedia.File_Path));
             mediaPlayer.Play();
@@ -230,6 +269,12 @@ namespace Media_Player
             queue -= 1;
             currentMedia = currentPlaylist.mediaList[queue];
             if (!IsPlaying) return;
+            if (!File.Exists(currentMedia.File_Path))
+            {
+                MessageBox.Show("Media not Exists!");
+                (sender as Button).RaiseEvent(new RoutedEventArgs(Button.ClickEvent, sender));
+                return;
+            }
             mediaPlayer.Stop();
             mediaPlayer.Open(new Uri(currentMedia.File_Path));
             mediaPlayer.Play();
@@ -272,11 +317,21 @@ namespace Media_Player
         }
         private void Btn_NewPlaylist(object sender, RoutedEventArgs e)
         {
-            var newPlaylist = new Playlist();
-            playlists.Add(newPlaylist);
-            currentPlaylist = newPlaylist;
+            mediaPlayer.Stop();
             Process_Slider.Value = 0;
+
+            Btn_Play.IsChecked = false;
+            currentMedia = null;
+            IsPlaying = false;
+            IsPaused = false;
+            IsStopped = true;
+
+            queue = 0;
+            stt = 0;
+            currentPlaylist = new Playlist();
             list.ItemsSource = currentPlaylist.mediaList;
+            CurrentMediaDetail = "";
+            UpdateTotalString();
         }
         private void Btn_SavePlaylist(object sender, RoutedEventArgs e)
         {
@@ -290,7 +345,7 @@ namespace Media_Player
         {
             var doc = new XmlDocument();
             doc.Load(Path);
-
+            Btn_Play.IsChecked = false;
             var root = doc.DocumentElement;
             #region Player
             IsPlaying = bool.Parse(root.Attributes["IsPlaying"].Value);
@@ -313,11 +368,11 @@ namespace Media_Player
             var MediaList = root.ChildNodes[1];
             var m_Path = MediaList.Attributes["PlayListPath"].Value;
             currentPlaylist = CreatePlaylist(m_Path);
-            foreach( XmlNode i in MediaList)
+            foreach (XmlNode i in MediaList)
             {
                 m_stt++;
                 var media = new Media();
-                media.Order = m_stt; 
+                media.Order = m_stt;
                 media.File_Path = i.Attributes["Path"].Value;
                 media.Duration_length = int.Parse(i.Attributes["Duration"].Value);
                 currentPlaylist.mediaList.Add(media);
@@ -325,6 +380,7 @@ namespace Media_Player
             #endregion
             mediaPlayer.Open(new Uri(currentMedia.File_Path));
             Process_Slider.Value = Double.Parse(root.Attributes["Process"].Value);
+            UpdateTotalString();
         }
         void SavePlaylist(string Path)
         {
@@ -353,7 +409,7 @@ namespace Media_Player
             var mediaList = doc.CreateElement("MediaList");
             mediaList.SetAttribute("PlayListPath", currentPlaylist.m_Path);
             root.AppendChild(mediaList);
-            foreach( var i in currentPlaylist.mediaList)
+            foreach (var i in currentPlaylist.mediaList)
             {
                 var mediaNode = doc.CreateElement("Media");
                 mediaNode.SetAttribute("Order", i.Order.ToString());
@@ -364,17 +420,20 @@ namespace Media_Player
             #endregion
             doc.Save(Path);
         }
-        private void Playlist_Detail(object sender, RoutedEventArgs e)
+        void UpdateTotalString()
         {
-
+            int total = 0;
+            foreach( var i in currentPlaylist.mediaList)
+            {
+                total += i.Duration_length;
+            }
+            Total_duration = TimeSpan.FromSeconds(total).ToString("hh':'mm':'ss");  
         }
-
-
         //Shuffle Mode
         private void Shuffle_Button_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as ToggleButton;
-            if(btn.IsChecked == false)
+            if (btn.IsChecked == false)
             {
                 currentPlaylist.ShuffleOff();
                 return;
@@ -415,6 +474,14 @@ namespace Media_Player
             var value = slider * currentMedia.Duration_length / 100;
 
             mediaPlayer.Position = TimeSpan.FromSeconds(value);
+        }
+
+        private void Delete_Btn_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (sender as Button).DataContext;
+            int index = list.Items.IndexOf(item);
+            currentPlaylist.mediaList.RemoveAt(index);
+            UpdateTotalString();
         }
     }
 }

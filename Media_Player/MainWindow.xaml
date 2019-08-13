@@ -171,12 +171,10 @@
                     </StackPanel>
                     <Separator/>
                     <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
-                        <Label Margin="20,0,15,0" Width="180"></Label>
+                        <Label VerticalAlignment="Center" Content="Total: "/>
+                        <Label Margin="20,0,15,0" VerticalAlignment="Center" Height="25" Width="160" Content="{Binding Total_duration}"/>
                         <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Add_Button_Click">
                             <materialDesign:PackIcon Kind="PlaylistAdd" Height="24" Width="24"/>
-                        </Button>
-                        <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Playlist_Detail">
-                            <materialDesign:PackIcon Kind="PlaylistNote" Background="Transparent" Height="24" Width="24"/>
                         </Button>
                     </StackPanel>
                     <Separator/>
@@ -191,7 +189,7 @@
                                            TextWrapping="Wrap" FontWeight="DemiBold" Margin="8"/>
                                         <TextBlock Margin="0,0,20,0" HorizontalAlignment="Right" Text="{Binding DurationString}"/>
                                     </StackPanel>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Padding="5,0,5,0" Foreground="IndianRed">
+                                    <Button Background="Transparent" Click="Delete_Btn_Click" BorderBrush="Transparent" Padding="5,0,5,0" Foreground="IndianRed">
                                         <materialDesign:PackIcon Kind="Close" Width="18" Height="18"/>
                                     </Button>
                                 </StackPanel>
@@ -207,9 +205,9 @@
         <StackPanel Orientation="Vertical" Height="65" Background="SlateGray">
             <Slider Name="Process_Slider" Minimum="0" Value="{Binding Process}" ValueChanged="Process_Slider_ValueChanged" Maximum="100" Margin="20,0,20,0"/>
             <StackPanel Height="45" VerticalAlignment="Bottom" Orientation="Horizontal">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Width="175" Margin="15,0,0,0">
-                    <Image VerticalAlignment="Center" Source="{Binding CurrentMediaIcon}" Height="24" Width="24"/>
-                    <Label VerticalAlignment="Center" Height="30" Foreground="Wheat" HorizontalContentAlignment="Left" FontSize="15" Content="{Binding CurrentMedia}"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Width="180" Margin="15,0,15,0">
+                    <materialDesign:PackIcon Kind="Music" Height="24" Width="24" VerticalAlignment="Center"/>
+                    <Label VerticalAlignment="Center" Margin="5,0,0,0" Height="30" Width="145" Foreground="Wheat" HorizontalContentAlignment="Left" FontSize="15" Content="{Binding CurrentMediaDetail}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
                     <ToggleButton Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
@@ -260,7 +258,7 @@
                     </ToggleButton>
                     <Slider Name="Volume_Slider" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" ValueChanged="Volume_Slider_ValueChanged" Maximum="100" />
                 </StackPanel>
-                <TextBlock VerticalAlignment="Top" Name="_time" Height="30" Width="120"/>
+                <TextBlock Margin="25,0,0,0" VerticalAlignment="Center" Name="_time" Height="30" Width="80" Text="{Binding ProcessString}"/>
             </StackPanel>
         </StackPanel>
     </StackPanel>
