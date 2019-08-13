@@ -156,29 +156,27 @@
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Playlist:" FontSize="15" VerticalAlignment="Center"/>
                         <StackPanel Margin="0,5,0,5" Orientation="Horizontal">
-                            <ComboBox Name="Combobox_playlist" Width="130" Margin="10,0,5,0"
+                            <ComboBox Name="Combobox_playlist" Width="130" Margin="10,0,15,0"
                                   IsEditable="True" VerticalAlignment="Center"
                                   DropDownOpened="ComboBox_DropDownOpened"
                                   SelectionChanged="Combobox_playlist_SelectionChanged">
                             </ComboBox>
-                            <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Btn_SavePlaylist">
-                                <materialDesign:PackIcon Kind="ContentSave" Width="24" Height="24"/>
+                            <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Click="Btn_SavePlaylist">
+                                <materialDesign:PackIcon Kind="ContentSaveAll" Width="24" Height="24"/>
                             </Button>
-                            <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Btn_NewPlaylist">
-                                <materialDesign:PackIcon Kind="CreateNewFolder" Width="24" Height="24"/>
+                            <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Click="Btn_NewPlaylist">
+                                <materialDesign:PackIcon Kind="OpenInNew" Width="24" Height="24"/>
                             </Button>
                         </StackPanel>
                     </StackPanel>
                     <Separator/>
                     <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
+                        <Label Margin="20,0,15,0" Width="180"></Label>
                         <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Add_Button_Click">
-                            <materialDesign:PackIcon Kind="Add" Height="24" Width="24"/>
-                        </Button>
-                        <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}">
-                            <materialDesign:PackIcon Kind="Loading" Height="24" Width="24"/>
+                            <materialDesign:PackIcon Kind="PlaylistAdd" Height="24" Width="24"/>
                         </Button>
                         <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Playlist_Detail">
-                            <materialDesign:PackIcon Kind="Details" Height="24" Width="24"/>
+                            <materialDesign:PackIcon Kind="PlaylistNote" Background="Transparent" Height="24" Width="24"/>
                         </Button>
                     </StackPanel>
                     <Separator/>
@@ -237,7 +235,7 @@
                     <Button Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" Click="Prev_Button_Click">
                         <materialDesign:PackIcon Kind="SkipPrevious" Width="24" Height="24"/>
                     </Button>
-                    <ToggleButton Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
+                    <ToggleButton Name="Btn_Play"  Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
                                   Style="{StaticResource MaterialDesignActionToggleButton}" 
                                   Click="Play_Button_Click" HorizontalAlignment="Left">
                         <ToggleButton.Content>

@@ -33,7 +33,15 @@ namespace Media_Player
     }
     public class Playlist
     {
+
         public BindingList<Media> mediaList = new BindingList<Media>();
+
+        public Playlist()
+        {
+            var time = DateTime.Now.Second.ToString();
+            m_Path = AppDomain.CurrentDomain.BaseDirectory + "Playlists\\" + time+".pl";
+        }
+
         public string m_Path { get; set; }
         override public string ToString()
         {
