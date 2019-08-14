@@ -8,27 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/aboutbutton.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/headtittle.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/loadbutton.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/nametagbackground.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/nextbutton.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/openbutton.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/pausebutton.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/playbutton.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/playertoolbar.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/playmodebuttonbackground.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/previousbutton.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/repeat10button.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/repeat5button.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/repeatbutton.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/repeatlist_black.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/repeatlist_white.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/savebutton.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/shufflebutton.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/shufflelist_black.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/shufflelist_white.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/volumeline.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/volumesymbol.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("image/unnamed.png")]
 
 

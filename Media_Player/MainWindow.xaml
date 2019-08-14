@@ -9,12 +9,22 @@
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
         TextOptions.TextFormattingMode="Ideal" 
+        
+        
+        
         TextOptions.TextRenderingMode="Auto" 
+        Background="Beige"
         xmlns:local="clr-namespace:Media_Player"
         mc:Ignorable="d"
         Name="mainwindow"
         Title="Audio Player" Height="500" Width="650">
     <Window.Resources>
+       
+        <Storyboard x:Key="Storyboard" BeginTime="00:00:00" Duration="00:00:05" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="RotateImage"
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" 
+                             From="0" To="360" Duration="00:00:05"/>
+        </Storyboard>
         <Style x:Key="ScrollBarTrackThumb"
         TargetType="{x:Type Thumb}">
             <Setter Property="Template">
@@ -147,7 +157,9 @@
             </Setter>
         </Style>
     </Window.Resources>
+    
     <StackPanel Orientation="Vertical">
+       
         <StackPanel Height="405" Width="650" Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     FlowDirection="RightToLeft">
@@ -198,9 +210,18 @@
                     </ListView>
                 </StackPanel>
             </Border>
-            <MediaElement Name="Canvas_content" Width="340" FlowDirection="LeftToRight">
-
-            </MediaElement>
+            <Grid Width="340">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Image RenderTransformOrigin="0.5, 0.5" x:Name="RotateImage" 
+                       Stretch="Uniform" Source="image/unnamed.png" Height="250" Width="250">
+                    <Image.RenderTransform>
+                        <RotateTransform Angle="0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Image.RenderTransform>
+                </Image>
+            </Grid>
         </StackPanel>
         <StackPanel Orientation="Vertical" Height="65" Background="SlateGray">
             <Slider Name="Process_Slider" Minimum="0" Value="{Binding Process}" ValueChanged="Process_Slider_ValueChanged" Maximum="100" Margin="20,0,20,0"/>

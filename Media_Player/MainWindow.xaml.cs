@@ -18,6 +18,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Threading;
@@ -90,11 +91,14 @@ namespace Media_Player
             }
         }
 
-        public string ProcessString {
-            get {
+        public string ProcessString
+        {
+            get
+            {
                 return processString;
             }
-            set {
+            set
+            {
                 processString = value;
                 RaiseChangeEvent();
             }
@@ -109,6 +113,7 @@ namespace Media_Player
         public MainWindow()
         {
             InitializeComponent();
+
             if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "Playlists"))
             {
                 Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "Playlists");
@@ -233,6 +238,7 @@ namespace Media_Player
                 IsPaused = false;
                 IsPlaying = true;
                 mediaPlayer.Play();
+                ((Storyboard)Resources["Storyboard"]).Begin();
             }
             else
             {
@@ -240,13 +246,14 @@ namespace Media_Player
                 IsStopped = false;
                 IsPlaying = false;
                 IsPaused = true;
+                ((Storyboard)Resources["Storyboard"]).Pause();
             }
         }
         private void Next_Button_Click(object sender, RoutedEventArgs e)
         {
             if (queue + 1 >= currentPlaylist.mediaList.Count)
             {
-                if (!IsLoop)  return;
+                if (!IsLoop) return;
                 queue = -1;
             }
             queue += 1;
@@ -382,6 +389,8 @@ namespace Media_Player
             Process_Slider.Value = Double.Parse(root.Attributes["Process"].Value);
             UpdateTotalString();
         }
+
+
         void SavePlaylist(string Path)
         {
             XmlDocument doc = new XmlDocument();
@@ -423,11 +432,11 @@ namespace Media_Player
         void UpdateTotalString()
         {
             int total = 0;
-            foreach( var i in currentPlaylist.mediaList)
+            foreach (var i in currentPlaylist.mediaList)
             {
                 total += i.Duration_length;
             }
-            Total_duration = TimeSpan.FromSeconds(total).ToString("hh':'mm':'ss");  
+            Total_duration = TimeSpan.FromSeconds(total).ToString("hh':'mm':'ss");
         }
         //Shuffle Mode
         private void Shuffle_Button_Click(object sender, RoutedEventArgs e)
@@ -483,5 +492,6 @@ namespace Media_Player
             currentPlaylist.mediaList.RemoveAt(index);
             UpdateTotalString();
         }
+
     }
 }
