@@ -537,6 +537,7 @@ namespace Media_Player
             mediaPlayer.Stop();
             mediaPlayer.Open(new Uri(currentMedia.File_Path));
             mediaPlayer.Play();
+            ((Storyboard)Resources["Storyboard"]).Begin();
         }
     }
 }
