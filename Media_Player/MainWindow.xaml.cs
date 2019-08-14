@@ -531,12 +531,13 @@ namespace Media_Player
         {
             var item = list.SelectedItem as Media;
             var index = list.Items.IndexOf(item);
+            Btn_Play.IsChecked = true;
             if (currentMedia == item) return;
             queue = index;
             currentMedia = item;
             mediaPlayer.Stop();
             mediaPlayer.Open(new Uri(currentMedia.File_Path));
-            mediaPlayer.Play();
+            mediaPlayer.Play();         
             ((Storyboard)Resources["Storyboard"]).Begin();
         }
     }
