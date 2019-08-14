@@ -9,17 +9,13 @@
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
         TextOptions.TextFormattingMode="Ideal" 
-        
-        
-        
         TextOptions.TextRenderingMode="Auto" 
-        Background="Beige"
+        ResizeMode="CanMinimize"
         xmlns:local="clr-namespace:Media_Player"
         mc:Ignorable="d"
         Name="mainwindow"
         Title="Audio Player" Height="500" Width="650">
     <Window.Resources>
-       
         <Storyboard x:Key="Storyboard" BeginTime="00:00:00" Duration="00:00:05" RepeatBehavior="Forever">
             <DoubleAnimation Storyboard.TargetName="RotateImage"
                              Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" 
@@ -157,9 +153,7 @@
             </Setter>
         </Style>
     </Window.Resources>
-    
     <StackPanel Orientation="Vertical">
-       
         <StackPanel Height="405" Width="650" Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     FlowDirection="RightToLeft">
@@ -168,30 +162,29 @@
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Playlist:" FontSize="15" VerticalAlignment="Center"/>
                         <StackPanel Margin="0,5,0,5" Orientation="Horizontal">
-                            <ComboBox Name="Combobox_playlist" Width="130" Margin="10,0,15,0"
-                                  IsEditable="True" VerticalAlignment="Center"
-                                  DropDownOpened="ComboBox_DropDownOpened"
-                                  SelectionChanged="Combobox_playlist_SelectionChanged">
-                            </ComboBox>
-                            <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Click="Btn_SavePlaylist">
+                            <TextBox Name="Playlist_Name" Width="125" IsReadOnly="True"/>
+                            <Button ToolTip="New Playlist" Padding="5" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Click="Btn_NewPlaylist">
+                                <materialDesign:PackIcon Kind="Create" Width="24" Height="24"/>
+                            </Button>
+                            <Button ToolTip="Save Playlist" Padding="5" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Click="Btn_SavePlaylist">
                                 <materialDesign:PackIcon Kind="ContentSaveAll" Width="24" Height="24"/>
                             </Button>
-                            <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Click="Btn_NewPlaylist">
-                                <materialDesign:PackIcon Kind="OpenInNew" Width="24" Height="24"/>
+                            <Button ToolTip="Open Playlist" Padding="5" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Click="Btn_OpenPlaylist">
+                                <materialDesign:PackIcon Kind="OpenInApp" Width="24" Height="24"/>
                             </Button>
                         </StackPanel>
                     </StackPanel>
                     <Separator/>
                     <StackPanel Margin="0,5,0,5" Orientation="Horizontal" Height="30">
                         <Label VerticalAlignment="Center" Content="Total: "/>
-                        <Label Margin="20,0,15,0" VerticalAlignment="Center" Height="25" Width="160" Content="{Binding Total_duration}"/>
-                        <Button Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Add_Button_Click">
+                        <Label Margin="20,0,15,0" FontWeight="DemiBold" HorizontalContentAlignment="Center" VerticalAlignment="Center" Height="25" Width="160" Content="{Binding Total_duration}"/>
+                        <Button ToolTip="Add new Media" Padding="5" Style="{StaticResource MaterialDesignFlatButton}" Click="Add_Button_Click">
                             <materialDesign:PackIcon Kind="PlaylistAdd" Height="24" Width="24"/>
                         </Button>
                     </StackPanel>
                     <Separator/>
                     <ListView FlowDirection="LeftToRight" Name="list" Height="305"
-                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                       ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single" MouseDoubleClick="List_MouseDoubleClick">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Width="300" HorizontalAlignment="Left">
@@ -210,28 +203,35 @@
                     </ListView>
                 </StackPanel>
             </Border>
-            <Grid Width="340">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Image RenderTransformOrigin="0.5, 0.5" x:Name="RotateImage" 
-                       Stretch="Uniform" Source="image/unnamed.png" Height="250" Width="250">
+            <Grid FlowDirection="LeftToRight" Width="335">
+                <Image Width="200" Height="200"
+                    RenderTransformOrigin="0.5, 0.5" x:Name="RotateImage" 
+                       Stretch="Uniform" Source="image/CD.png" >
                     <Image.RenderTransform>
                         <RotateTransform Angle="0" RenderOptions.BitmapScalingMode="HighQuality"/>
                     </Image.RenderTransform>
                 </Image>
+                <Label VerticalAlignment="Bottom" Margin="0,0,0,20" Height="40" Width="230" HorizontalContentAlignment="Left" FontSize="22" Content="{Binding CurrentMediaDetail}"/>
             </Grid>
         </StackPanel>
         <StackPanel Orientation="Vertical" Height="65" Background="SlateGray">
             <Slider Name="Process_Slider" Minimum="0" Value="{Binding Process}" ValueChanged="Process_Slider_ValueChanged" Maximum="100" Margin="20,0,20,0"/>
             <StackPanel Height="45" VerticalAlignment="Bottom" Orientation="Horizontal">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Width="180" Margin="15,0,15,0">
-                    <materialDesign:PackIcon Kind="Music" Height="24" Width="24" VerticalAlignment="Center"/>
-                    <Label VerticalAlignment="Center" Margin="5,0,0,0" Height="30" Width="145" Foreground="Wheat" HorizontalContentAlignment="Left" FontSize="15" Content="{Binding CurrentMediaDetail}"/>
+                <StackPanel Orientation="Horizontal" Width="200" Margin="20,0,0,0" VerticalAlignment="Top">
+                    <ToggleButton ToolTip="Mute On/Off" Name="Volumn_Mode_Btn" Padding="8,0,8,0" Background="Transparent"
+                                  BorderBrush="Transparent" Style="{StaticResource MaterialDesignActionToggleButton}"
+                                  HorizontalAlignment="Left" Click="Volumn_Mode_Btn_Click">
+                        <ToggleButton.Content>
+                            <materialDesign:PackIcon Kind="VolumeHigh" Width="24" Height="24"/>
+                        </ToggleButton.Content>
+                        <materialDesign:ToggleButtonAssist.OnContent>
+                            <materialDesign:PackIcon Kind="VolumeMute" Width="24" Height="24" />
+                        </materialDesign:ToggleButtonAssist.OnContent>
+                    </ToggleButton>
+                    <Slider ToolTip="{Binding Volume_Slider.Value}" Name="Volume_Slider" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" ValueChanged="Volume_Slider_ValueChanged" Maximum="100" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-                    <ToggleButton Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
+                    <ToggleButton ToolTip="Shuffle Mode" Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
                                   Style="{StaticResource MaterialDesignActionToggleButton}" 
                                   Click="Shuffle_Button_Click" HorizontalAlignment="Left">
                         <ToggleButton.Content>
@@ -241,7 +241,7 @@
                             <materialDesign:PackIcon Kind="ShuffleVariant" Foreground="Aqua" Width="24" Height="24" />
                         </materialDesign:ToggleButtonAssist.OnContent>
                     </ToggleButton>
-                    <ToggleButton Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
+                    <ToggleButton ToolTip="Replay Mode" Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
                                   Style="{StaticResource MaterialDesignActionToggleButton}" 
                                   Click="Replay_Button_Click" HorizontalAlignment="Left">
                         <ToggleButton.Content>
@@ -251,10 +251,10 @@
                             <materialDesign:PackIcon Kind="Loop" Foreground="Aqua" Width="24" Height="24" />
                         </materialDesign:ToggleButtonAssist.OnContent>
                     </ToggleButton>
-                    <Button Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" Click="Prev_Button_Click">
+                    <Button Name="Pre_Btn" ToolTip="Previous" Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" Click="Prev_Button_Click">
                         <materialDesign:PackIcon Kind="SkipPrevious" Width="24" Height="24"/>
                     </Button>
-                    <ToggleButton Name="Btn_Play"  Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
+                    <ToggleButton Name="Btn_Play" ToolTip="Play/Pause" Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
                                   Style="{StaticResource MaterialDesignActionToggleButton}" 
                                   Click="Play_Button_Click" HorizontalAlignment="Left">
                         <ToggleButton.Content>
@@ -267,19 +267,11 @@
                     <Button Name="Next_Btn" Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" Click="Next_Button_Click">
                         <materialDesign:PackIcon Kind="SkipNext" Width="24" Height="24"/>
                     </Button>
-                    <ToggleButton Name="Volumn_Mode_Btn" Padding="8,0,8,0" Background="Transparent"
-                                  BorderBrush="Transparent" Style="{StaticResource MaterialDesignActionToggleButton}"
-                                  HorizontalAlignment="Left" Click="Volumn_Mode_Btn_Click">
-                        <ToggleButton.Content>
-                            <materialDesign:PackIcon Kind="VolumeHigh" Width="24" Height="24"/>
-                        </ToggleButton.Content>
-                        <materialDesign:ToggleButtonAssist.OnContent>
-                            <materialDesign:PackIcon Kind="VolumeMute" Width="24" Height="24" />
-                        </materialDesign:ToggleButtonAssist.OnContent>
-                    </ToggleButton>
-                    <Slider Name="Volume_Slider" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" ValueChanged="Volume_Slider_ValueChanged" Maximum="100" />
+                    <Button Name="Stop_Btn" ToolTip="Next" Background="Transparent" BorderBrush="Transparent" Padding="8,0,8,0" Click="Stop_Btn_Click">
+                        <materialDesign:PackIcon Kind="Stop" Width="24" Height="24"/>
+                    </Button>
                 </StackPanel>
-                <TextBlock Margin="25,0,0,0" VerticalAlignment="Center" Name="_time" Height="30" Width="80" Text="{Binding ProcessString}"/>
+                <TextBlock ToolTip="Duration" Margin="25,0,0,0" VerticalAlignment="Center" Foreground="White" Name="_time" Height="30" Width="120" Text="{Binding ProcessString}"/>
             </StackPanel>
         </StackPanel>
     </StackPanel>

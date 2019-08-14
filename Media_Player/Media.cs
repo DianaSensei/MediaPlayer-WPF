@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Media_Player
 {
@@ -72,6 +70,12 @@ namespace Media_Player
                         mediaList[j] = temp;
                     }
                 }
+        }
+        public string Name {
+            get
+            {
+                return Path.GetFileNameWithoutExtension(this.m_Path);
+            }
         }
     }
 }

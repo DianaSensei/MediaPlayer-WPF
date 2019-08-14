@@ -72,10 +72,3 @@ C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 3\Me
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 3\MediaPlayer-WPF\Media_Player\bin\Debug\MaterialDesignThemes.Wpf.xml
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 3\MediaPlayer-WPF\Media_Player\obj\Debug\App.baml
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 3\MediaPlayer-WPF\Media_Player\obj\Debug\Media_Player.csproj.CopyComplete
-C:\Users\Cow\source\repos\Media_Player\MediaPlayer-WPF\Media_Player\bin\Debug\MaterialDesignColors.dll
-C:\Users\Cow\source\repos\Media_Player\MediaPlayer-WPF\Media_Player\bin\Debug\MaterialDesignThemes.Wpf.dll
-C:\Users\Cow\source\repos\Media_Player\MediaPlayer-WPF\Media_Player\bin\Debug\MaterialDesignColors.pdb
-C:\Users\Cow\source\repos\Media_Player\MediaPlayer-WPF\Media_Player\bin\Debug\MaterialDesignThemes.Wpf.pdb
-C:\Users\Cow\source\repos\Media_Player\MediaPlayer-WPF\Media_Player\bin\Debug\MaterialDesignThemes.Wpf.xml
-C:\Users\Cow\source\repos\Media_Player\MediaPlayer-WPF\Media_Player\obj\Debug\App.baml
-C:\Users\Cow\source\repos\Media_Player\MediaPlayer-WPF\Media_Player\obj\Debug\Media_Player.csproj.CopyComplete
