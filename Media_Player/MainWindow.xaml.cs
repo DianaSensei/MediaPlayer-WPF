@@ -468,7 +468,7 @@ namespace Media_Player
             var btn = sender as ToggleButton;
             if (btn.IsChecked == true)
             {
-                volume_value = mediaPlayer.Volume;
+                volume_value = Volume_Slider.Value;
                 Volume_Slider.Value = 0;
             }
             else
