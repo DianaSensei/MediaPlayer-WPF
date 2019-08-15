@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml;
+using System.Diagnostics;
+using Gma.System.MouseKeyHook;
 
 namespace Media_Player
 {
@@ -19,15 +21,62 @@ namespace Media_Player
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-
         public bool IsStopped = false;
         public bool IsPaused = false;
         public bool IsPlaying = false;
         public bool IsLoop = false;//Loop Mode
+        private IKeyboardMouseEvents _hook;
+        public void Subscribe()
+        {
+            _hook = Hook.GlobalEvents();
+            _hook.KeyUp += _hook_KeyUp;
+        }
+
+        private void _hook_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.Control && e.Alt && e.KeyCode == System.Windows.Forms.Keys.F1)
+            {
+                Volumn_Mode_Btn.IsChecked = !Volumn_Mode_Btn.IsChecked;
+                Volumn_Mode_Btn_Click(Volumn_Mode_Btn, new RoutedEventArgs());;
+            }
+            else if(e.Control && e.Alt && e.KeyCode == System.Windows.Forms.Keys.F2)
+            {
+                Volume_Slider.Value -= 10;
+            }
+            else if(e.Control && e.Alt && e.KeyCode == System.Windows.Forms.Keys.F3)
+            {
+                Volume_Slider.Value += 10;
+            }
+            else if (e.Control && e.Alt && e.KeyCode == System.Windows.Forms.Keys.F4)
+            {
+                Pre_Btn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent, Pre_Btn));
+            }
+            else if (e.Control && e.Alt && e.KeyCode == System.Windows.Forms.Keys.F5)
+            {
+                Next_Btn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent, Next_Btn));
+            }
+            else if (e.Control && e.Alt && e.KeyCode == System.Windows.Forms.Keys.F6)
+            {
+                Btn_Play.RaiseEvent(new RoutedEventArgs(ToggleButton.ClickEvent, Btn_Play));
+                if (IsPlaying)
+                    Btn_Play.IsChecked = true;
+                else Btn_Play.IsChecked = false;
+            }
+            else if(e.Control && e.Alt && e.KeyCode == System.Windows.Forms.Keys.F7)
+            {
+                Stop_Btn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent, Stop_Btn));
+            }
+        }
+
+        public void Unsubscribe()
+        {
+            _hook.KeyUp -= _hook_KeyUp;
+            _hook.Dispose();
+        }
 
         int stt = 0;
         int queue = 0;
-        double volume_value;
+        double volume_value = 100;
         string total_duration;
         double process;//Process Bar
         string currentMediaDetail;//About
@@ -53,8 +102,6 @@ namespace Media_Player
             get => currentMediaDetail; set
             {
                 currentMediaDetail = value;
-
-
                 RaiseChangeEvent();
             }
         }
@@ -99,10 +146,10 @@ namespace Media_Player
         public MainWindow()
         {
             InitializeComponent();
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "Playlists"))
-            {
-                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "Playlists");
-            }
+            //if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "Playlists"))
+            //{
+            //    Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "Playlists");
+            //}
             list.ItemsSource = currentPlaylist.mediaList;
             this.DataContext = this;
 
@@ -113,11 +160,9 @@ namespace Media_Player
             processTimer.Start();
             //Continue play next media when current media is finished
             mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
-
-            mediaPlayer.Volume = 100;
             Volume_Slider.Value = 100;
+            Subscribe();
         }
-
         private void MediaPlayer_MediaEnded(object sender, EventArgs e)
         {
             if (queue + 1 >= currentPlaylist.mediaList.Count)
@@ -447,7 +492,7 @@ namespace Media_Player
         private void Volume_Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             double value = (sender as Slider).Value;
-            mediaPlayer.Volume = value;
+            mediaPlayer.Volume = value/100;
             if (value == 0)
             {
                 Volumn_Mode_Btn.IsChecked = true;
@@ -455,18 +500,25 @@ namespace Media_Player
             else
             {
                 Volumn_Mode_Btn.IsChecked = false;
+                //volume_value = value;
             }
+            Debug.WriteLine("MEDIA VOLUME " + mediaPlayer.Volume.ToString());
         }
         private void Volumn_Mode_Btn_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as ToggleButton;
+            var value = Volume_Slider.Value;
+            Debug.WriteLine("Check " + btn.IsChecked.ToString());
             if (btn.IsChecked == true)
             {
-                volume_value = Volume_Slider.Value;
+                if (value == 0) volume_value = 100;
+                else volume_value = value;
+                Debug.WriteLine("Volume:" + volume_value.ToString());
                 Volume_Slider.Value = 0;
             }
             else
             {
+                if (volume_value == 0) Volume_Slider.Value = 100;
                 Volume_Slider.Value = volume_value;
             }
         }
@@ -531,14 +583,20 @@ namespace Media_Player
         {
             var item = list.SelectedItem as Media;
             var index = list.Items.IndexOf(item);
-            Btn_Play.IsChecked = true;
             if (currentMedia == item) return;
             queue = index;
             currentMedia = item;
             mediaPlayer.Stop();
             mediaPlayer.Open(new Uri(currentMedia.File_Path));
-            mediaPlayer.Play();         
-            ((Storyboard)Resources["Storyboard"]).Begin();
+            mediaPlayer.Play();
+            Btn_Play.IsChecked = true;
+        }
+
+        private void Mainwindow_Closed(object sender, EventArgs e)
+        {
+            Unsubscribe();
+            mediaPlayer.Close();
+            mediaDuration.Close();
         }
     }
 }

@@ -13,7 +13,7 @@
         ResizeMode="CanMinimize"
         xmlns:local="clr-namespace:Media_Player"
         mc:Ignorable="d"
-        Name="mainwindow"
+        Name="mainwindow" Closed="Mainwindow_Closed"
         Title="Audio Player" Height="500" Width="650">
     <Window.Resources>
         <Storyboard x:Key="Storyboard" BeginTime="00:00:00" Duration="00:00:05" RepeatBehavior="Forever">
@@ -228,7 +228,7 @@
                             <materialDesign:PackIcon Kind="VolumeMute" Width="24" Height="24" />
                         </materialDesign:ToggleButtonAssist.OnContent>
                     </ToggleButton>
-                    <Slider ToolTip="{Binding Volume_Slider.Value}" Name="Volume_Slider" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" ValueChanged="Volume_Slider_ValueChanged" Maximum="100" />
+                    <Slider Name="Volume_Slider" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" ValueChanged="Volume_Slider_ValueChanged" Maximum="100" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
                     <ToggleButton ToolTip="Shuffle Mode" Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" 
@@ -264,10 +264,10 @@
                             <materialDesign:PackIcon Kind="PauseCircle" Width="34" Height="34" />
                         </materialDesign:ToggleButtonAssist.OnContent>
                     </ToggleButton>
-                    <Button Name="Next_Btn" ToolTip="Next" Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" Click="Next_Button_Click">
+                    <Button Name="Next_Btn" Padding="8,0,8,0" Background="Transparent" BorderBrush="Transparent" Click="Next_Button_Click">
                         <materialDesign:PackIcon Kind="SkipNext" Width="24" Height="24"/>
                     </Button>
-                    <Button Name="Stop_Btn" ToolTip="Stop" Background="Transparent" BorderBrush="Transparent" Padding="8,0,8,0" Click="Stop_Btn_Click">
+                    <Button Name="Stop_Btn" ToolTip="Next" Background="Transparent" BorderBrush="Transparent" Padding="8,0,8,0" Click="Stop_Btn_Click">
                         <materialDesign:PackIcon Kind="Stop" Width="24" Height="24"/>
                     </Button>
                 </StackPanel>
